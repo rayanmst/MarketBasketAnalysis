@@ -44,7 +44,7 @@ Nessa análise da base de dados, as regras estabelecidas são mensuradas em sua 
 
 ### Algoritmo de apriori
 
-![Apriori](.\Imagens\Apriori.png)
+![Apriori](./Imagens/Apriori.png)
 
 Algoritmo proposto por Agrawal e Srikant em 1994, desenvolvido para a mineiração de dados online que contenham transações. O algortimo começa analizando os itens individualmente e expandindo um item por vez dos conjuntos que tiverem suporte maior que o dado como mínimo. Sendo assim, a ideia do algortimo se baseia no fato de que se um conjunto não é frequente, todas as regras que derivam deste conjunto também não o serão. O pseudocódigo está apresentado abaixo:
 
