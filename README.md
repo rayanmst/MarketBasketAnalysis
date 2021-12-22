@@ -1,4 +1,5 @@
-# Market Basket Analysis
+Market Basket Analysis
+
 Este repositório é parte da disciplina de Projeto Integrador III, do curso de engenharia eletrônica do Instituto Federal de Santa Catarina
 
 ## Conceituação
@@ -10,15 +11,20 @@ Utilizando de um conjunto de dados que representam as transações dos consumido
 Nessa análise da base de dados, as regras estabelecidas são mensuradas em sua maioria por 3 principais métricas.
 
 * **Suporte**: Métrica que representa a frequência de ocorrência de compra do conjunto de itens em questão do total de compras. Sendo representada como:
-  $$
-  Supp = \frac{freq(X,Y)}{N}
-  $$
-
+  
+  
+  
+  <img src="https://render.githubusercontent.com/render/math?math=Supp=\frac{freq(X,Y)}{N}">
+  
+  
+  
 * **Confiança: ** Representa a probabilidade de que a transação do do lado esquerdo da regra (antecedente) também contenha o conjunto do lado direito (consequente), sendo dada por:
 
-$$
-Conf = \frac{freq(X,Y)}{freq(X)}
-$$
+
+
+<img src="https://render.githubusercontent.com/render/math?math=Conf = \frac{freq(X,Y)}{freq(X)}">
+
+
 
 * **Lift: ** A probabilidade de uma regra ocorrer de maneira idependente da sugestão dos itens. Há 3 posibilidades:
 
@@ -26,10 +32,12 @@ $$
   * Lift = 1: A aquisição dos itens antecendetes não influenciam na aquisição dos consequentes
   * Lift < 1: O antecedente prejudica a aquisição dos itens consequentes.
 
-  $$
-  Lift = \frac{freq(X,Y)}{freq(X)*freq(Y)}
-  $$
+  
+  
+  <img src="https://render.githubusercontent.com/render/math?math=Lift = \frac{freq(X,Y)}{freq(X)*freq(Y)}">
 
+  
+  
   
 
 ## Algoritmos testados
@@ -75,7 +83,7 @@ Apriori_gen(L, k)
 
 ### FP-Growth
 
-<img src="./Imagens/fpgrowth.png" alt="Fp-tree construction" style="zoom: 40%;" />
+<img src="./Imagens/fpgrowth.jpg" alt="Fp-tree construction" style="zoom: 40%;" />
 
 
 
@@ -184,7 +192,7 @@ spark
 
 [7] [Han, Jiawei et al. Mining frequent patterns without candidate generation](./Referencias/FPGrowth.pdf)
 
-[8] [Xin, Dong et al. Mining Compressed Frequent-Pattern Sets](./Referencias/Mining Compressed FPS.pdf)
+[8] [Xin, Dong et al. Mining Compressed Frequent-Pattern Sets](./Referencias/FPS.pdf)
 
 [9] [Li, Haouyuan et al. Pfp: parallel fp-growth for query recommendation](./Referencias/PFP.pdf)
 
