@@ -1,4 +1,4 @@
-Market Basket Analysis
+# Market Basket Analysis
 
 Este repositório é parte da disciplina de Projeto Integrador III, do curso de engenharia eletrônica do Instituto Federal de Santa Catarina
 
@@ -14,11 +14,11 @@ Nessa análise da base de dados, as regras estabelecidas são mensuradas em sua 
   
   
   
-  <img src="https://render.githubusercontent.com/render/math?math=Supp=\frac{freq(X,Y)}{N}">
+<img src="https://render.githubusercontent.com/render/math?math=Supp=\frac{freq(X,Y)}{N}">
   
   
   
-* **Confiança: ** Representa a probabilidade de que a transação do do lado esquerdo da regra (antecedente) também contenha o conjunto do lado direito (consequente), sendo dada por:
+* **Confiança:** Representa a probabilidade de que a transação do do lado esquerdo da regra (antecedente) também contenha o conjunto do lado direito (consequente), sendo dada por:
 
 
 
@@ -26,15 +26,14 @@ Nessa análise da base de dados, as regras estabelecidas são mensuradas em sua 
 
 
 
-* **Lift: ** A probabilidade de uma regra ocorrer de maneira idependente da sugestão dos itens. Há 3 posibilidades:
+* **Lift:** A probabilidade de uma regra ocorrer de maneira idependente da sugestão dos itens. Há 3 posibilidades:
 
   * Lift > 1: O lado esquerdo da regra eleva a possibilidade dos itens do lado direito serem comprados.
   * Lift = 1: A aquisição dos itens antecendetes não influenciam na aquisição dos consequentes
   * Lift < 1: O antecedente prejudica a aquisição dos itens consequentes.
 
-  
-  
-  <img src="https://render.githubusercontent.com/render/math?math=Lift = \frac{freq(X,Y)}{freq(X)*freq(Y)}">
+
+<img src="https://render.githubusercontent.com/render/math?math=Lift = \frac{freq(X,Y)}{freq(X)*freq(Y)}">
 
   
   
@@ -91,7 +90,7 @@ O algoritmo de FP-Growth é uma forma de aprimorar o algoritmo de apriori. O alg
 
 * **Resultados dos testes**
   * Encontrou-se problemas semelhantes aos do algoritmo de apriori ao executar nos grupos de clientes com mais compras, contudo as dimensões dos problemas são menores que as encontradas anteriormente
-* **Medidas tomadas: ** Com a pesquisa mais a fundo dos métodos mais eficazes de implementação do algoritmo, chegou-se na alternativa de paralelização do processamento dos modelos, sendo assim, optou-se pela utilização do framework Apache Spark com um ambiente Hadoop.
+* **Medidas tomadas:** Com a pesquisa mais a fundo dos métodos mais eficazes de implementação do algoritmo, chegou-se na alternativa de paralelização do processamento dos modelos, sendo assim, optou-se pela utilização do framework Apache Spark com um ambiente Hadoop.
 
 
 
