@@ -1,2 +1,208 @@
-# MarketBasketAnalysis
+# Market Basket Analysis
 Este repositório é parte da disciplina de Projeto Integrador III, do curso de engenharia eletrônica do Instituto Federal de Santa Catarina
+
+## Conceituação
+
+Uma das maiores necessidades de uma empresa é certamente a necessidade de estar sempre desenvolvendo novas maneiras de aumentar o volume de vendas de seus produtos. Uma das maneiras de atingir esse objetivo é vender mais para aqueles que já são clientes do negócio. Tendo isso em vista, surgiu a demanda de encontrar uma maneira de sugerir itens que podem vir a interessar e/ou complementar aqueles que os clientes já adquirem. Nesse objetivo surgiu a análise do carrinho de compras.
+
+Utilizando de um conjunto de dados que representam as transações dos consumidores do negócio, é possível estabelecermos regras associativas do tipo X => Y, onde X representa um ou mais itens que o cliente adquiriu e Y um conjunto de itens sugeridos com base naqueles já adquiridos pelos clientes. Essas regras que embasarão as sugestões para os clientes, contudo antes de se estabelecer elas faz-se uma análise da base de dados com o fim de se estabelecer embasamento o suficiente para que a regra seja provada como efetiva.
+
+Nessa análise da base de dados, as regras estabelecidas são mensuradas em sua maioria por 3 principais métricas.
+
+* **Suporte**: Métrica que representa a frequência de ocorrência de compra do conjunto de itens em questão do total de compras. Sendo representada como:
+  $$
+  Supp = \frac{freq(X,Y)}{N}
+  $$
+
+* **Confiança: ** Representa a probabilidade de que a transação do do lado esquerdo da regra (antecedente) também contenha o conjunto do lado direito (consequente), sendo dada por:
+
+$$
+Conf = \frac{freq(X,Y)}{freq(X)}
+$$
+
+* **Lift: ** A probabilidade de uma regra ocorrer de maneira idependente da sugestão dos itens. Há 3 posibilidades:
+
+  * Lift > 1: O lado esquerdo da regra eleva a possibilidade dos itens do lado direito serem comprados.
+  * Lift = 1: A aquisição dos itens antecendetes não influenciam na aquisição dos consequentes
+  * Lift < 1: O antecedente prejudica a aquisição dos itens consequentes.
+
+  $$
+  Lift = \frac{freq(X,Y)}{freq(X)*freq(Y)}
+  $$
+
+  
+
+## Algoritmos testados
+
+### Algoritmo de apriori
+
+![Apriori](.\Imagens\Apriori.png)
+
+Algoritmo proposto por Agrawal e Srikant em 1994, desenvolvido para a mineiração de dados online que contenham transações. O algortimo começa analizando os itens individualmente e expandindo um item por vez dos conjuntos que tiverem suporte maior que o dado como mínimo. Sendo assim, a ideia do algortimo se baseia no fato de que se um conjunto não é frequente, todas as regras que derivam deste conjunto também não o serão. O pseudocódigo está apresentado abaixo:
+
+```
+Apriori(T, ε)
+    L1 ← {large 1 - itemsets}
+    k ← 2
+    while Lk−1 is not empty
+        Ck ← Apriori_gen(Lk−1, k)
+        for transactions t in T
+            Dt ← {c in Ck : c ⊆ t}
+            for candidates c in Dt
+                count[c] ← count[c] + 1
+
+        Lk ← {c in Ck : count[c] ≥ ε}
+        k ← k + 1
+
+    return Union(Lk)
+    
+Apriori_gen(L, k)
+     result ← list()
+     for all p ⊆ L, q ⊆ L where p1 = q1, p2 = q2, ..., pk-2 = qk-2 and pk-1 < qk-1
+         c = p ∪ {qk-1}
+         if u ⊆ c for all u in L
+             result.add(c)
+      return result
+```
+
+
+
+* **Problemas encontrados:**
+  * **Excesso de uso dos recursos:** Devido a alguns dos clientes na base terem um conjunto considerável de itens comprados no período analisado, as associações de tamanho superior a 80 itens antecedentes e a exigirem mais de 300 GB de memória RAM disponível, tornando impossível o processamento local do algoritmo
+  * **Tempo de processamento:** Durante os testes com conjuntos menores, o tempo de processamento foi superior a 11h, e resultando em intervenção do sistema abortando o processamento. Durante pesquisas sobre como aprimorar a análise com o algoritmo, encontrou-se diversas situações relatadas onde bases de tamanho similar à utilizada sendo processadas por dias a fio em ambientes em nuvem com recursos o suficiente para alocar as exigências do algoritmo.
+  * **Espaço de armazenamento: ** Durante o processamento dos daods, os arquivos temporários chegam a ocupar mais de 130GB de espaço em disco, tornando o processo oneroso para o ambiente disponível.
+* Devido aos problemas relatados, foi feita a migração para outro tipo de algoritmo,  que se mostrou menos oneroso ao sistema e mais eficaz que o atual
+
+### FP-Growth
+
+<img src="./Imagens/fpgrowth.png" alt="Fp-tree construction" style="zoom: 40%;" />
+
+
+
+O algoritmo de FP-Growth é uma forma de aprimorar o algoritmo de apriori. O algoritmo lê a base de transações e faz a contagem da frequência em que os itens aparecem, aqueles itens que estão abaixo do suporte mínimo são retirados dos conjuntos e estessão reordenados por frequência. Com esse passo feito, cada linha do algoritmo é varrida e sendo representada na árvore, tendo o número de vezes que cada subconjunto aparece. Assim que a árvore está formada, o algortimo faz a montagem dos conjuntos de itens frequentes com base no número de aparições do item nos subconjuntos. Devido a isso, o algortimo se mostra mais rápido e menos oneroso ao sistema.
+
+* **Resultados dos testes**
+  * Encontrou-se problemas semelhantes aos do algoritmo de apriori ao executar nos grupos de clientes com mais compras, contudo as dimensões dos problemas são menores que as encontradas anteriormente
+* **Medidas tomadas: ** Com a pesquisa mais a fundo dos métodos mais eficazes de implementação do algoritmo, chegou-se na alternativa de paralelização do processamento dos modelos, sendo assim, optou-se pela utilização do framework Apache Spark com um ambiente Hadoop.
+
+
+
+## Apache Spark
+
+Um framework de código aberto multi-plataforma voltado para processamento de dados em larga escala por meio de clusterização e paralelismo. Pode funcionar tanto localmente quanto em uma malha de computadores e suporta programação nas linguagens Scala, Java, Python e R. 
+
+* Arquitetura do Spark é subdividida em:
+
+  * **Driver**: Máquina na qual aplicação é executada. Responsável por:
+    - Manter informações sobre a aplicação
+    - Apresentar respostas ao usuário
+    - Gerenciar a distribuição de tarefas pelos executores 
+
+  * **Jobs:** Ações paralelizadas que são separadas em uma série de passos ordenados que são chamados de Stages
+
+  * **Executores**: Armazenam uma partição Spark para ser processada, sendo responsáveis por:
+    - Executar o código designado pelo driver
+    - Reportar o status da computação para o driver
+
+  * **Slots:** Partes do executor que são responsáveis por realizar as Tasks
+
+  * **Task:** São responsáveis pelo processamento de dados nas partições
+
+  * **SparkSession:** Acesso ao SparkContext
+
+  * **SparkContext:** Conexão com o Cluster
+
+* As modificações nos dados dos dataframes só ocorrem quando uma ação é executada. Esse comportamento recebe o nome de **Lazy evaluation**
+* Estruturas de dados:
+  * **RDD** (Resilient distributed datasets):
+    - Estrutura de baixo nível
+    - Imutável
+    - Complexo
+    - Otimização dificultosa
+  * **DataFrame**:
+    - Estrutura de dados de mais alto nível
+    - Imutável
+    - Schema conhecido
+    - Mais otimizado pelo Spark
+
+### Configurando o ambiente Spark
+
+* **Java JDK:** Para a instalação utilizou-se o JRE 1.8.0-301
+  - Necessário criar a variável de ambiente JAVA_HOME com o diretório de instalação do JRE
+  - Adicionar na variável de ambiente Path: %JAVA_HOME%\bin
+* **Hadoop:** Foi feita a utilização da versão 2.7.4
+  - Para a utilização é necessário realizar o download dos arquivos winutils.exe e hadoop.dll, disponíveis [aqui](https://github.com/cdarlint/winutils) e inseri-los na pasta bin do local de instalação do hadoop
+  - A extração dos arquivos do .tar.gz devem ser feitas utilizando o 7-zip como administrador, para que sejam feitos os links simbólicos das bibliotecas nativas. 
+  - No windows, recomenda-se a criação do diretório do Hadoop em uma pasta raiz (Ex: C:\hdp) devido à estrutura de arquivos do hadoop ter muitas pastas e o caminhodelas exceder o número máximo de caracteres do SO.
+  - Necessário criar a variável de ambiente HADOOP_HOME com o diretório de instalação do HADOOP
+  - Adicionar na variável de ambiente Path: %HADOOP_HOME%\bin
+* **Spark:** Versão 3.12 com hadoop 2.7
+  - Necessário criar a variável de ambiente SPARK_HOME com o diretório de instalação do SPARK
+  - Adicionar na variável de ambiente Path: %SPARK_HOME%\bin
+* **Pyspark:** Para a instalação foi utilizado a versão 3.1.2 do anaconda
+  - Para a correta instalação e utilização com o jupyter notebook, é necessário criar as variáveis de ambiente:
+    - PYSPARK_DRIVER_PYTHON = "jupyter"
+    - PYSPARK_DRIVER_PYTHON_OPTS = "notebook"
+    - PYSPARK_HADOOP_VERSION: Esta variável pode ter valor 2.7, 3.2 ou "without" dependendo da versão do hadoop que se deseja utilizar. Para a utilização foi utilizada a versão 2.7
+    - PYTHONPATH: %SPARK_HOME%/python;$SPARK_HOME/python/lib/py4j-0.10.9-src.zip
+  - Instalar o módulo findspark com o pip
+
+### Utilizando o pyspark
+
+* Inicializando uma SparkSession utilizando python
+
+```
+import findspark
+from pyspark.sql import SparkSession
+## Spark Conf
+findspark.init()
+spark = SparkSession.builder.master("local[*]").getOrCreate()
+spark = SparkSession.builder.appName("marketBasket").getOrCreate()
+spark.conf.set("spark.sql.execution.arrow.pyspark.enabled", "true")
+spark
+```
+
+* Será exibida a mensagem abaixo, ao clicar e, "Spark UI" será aberta uma guia com informações sobre a seção do spark sendo utilizada
+
+<img src="./Imagens/sparksession.png" style="zoom:70%;" />
+
+
+
+## Referências
+
+[1] https://select-statistics.co.uk/blog/market-basket-analysis-understanding-customer-behaviour/
+
+[2] https://medium.com/@fabio.italiano/the-apriori-algorithm-in-python-expanding-thors-fan-base-501950d55be9
+
+[3] https://www.geeksforgeeks.org/item-to-item-based-collaborative-filtering/
+
+[4] https://www.geeksforgeeks.org/trie-insert-and-search/
+
+[5] https://www.linkedin.com/pulse/market-basket-analysis-why-lift-odd-metric-nadamuni-ramesh/
+
+[6] [Dahdouh, Karim et al. Large‑scale e‑learning recommender system based on Spark and Hadoop](./Referencias/LargeScaleELearning.pdf)
+
+[7] [Han, Jiawei et al. Mining frequent patterns without candidate generation](./Referencias/FPGrowth.pdf)
+
+[8] [Xin, Dong et al. Mining Compressed Frequent-Pattern Sets](./Referencias/Mining Compressed FPS.pdf)
+
+[9] [Li, Haouyuan et al. Pfp: parallel fp-growth for query recommendation](./Referencias/PFP.pdf)
+
+[10] [Bueher, Gregory et al. Toward terabyte pattern mining: An Architecture-conscious Solution](./Referencias/Terabyte.pdf)
+
+[11] [Zhou, Yunhong et al. Large-scale Parallel Collaborative Filtering for the Netflix Prize](./Referencias/Netflix.pdf)
+
+[12] [Maradin, Octavian. Using purchase histories for predicting the next market basket](./Referencias/thesis.pdf)
+
+[13] https://en.wikipedia.org/wiki/Apriori_algorithm
+
+[14] https://towardsdatascience.com/fp-growth-frequent-pattern-generation-in-data-mining-with-python-implementation-244e561ab1c3
+
+[15] https://pt.wikipedia.org/wiki/Apache_Spark
+
+
+
+## ToDo
+
+* Encontrar base genérica para adequar modelo à LGPD
+* Realizar procedimentos já testados com base original na nova base genérica para melhor apresentação dos problemas encontrados e métodos utilizados
