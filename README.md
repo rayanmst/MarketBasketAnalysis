@@ -37,7 +37,44 @@ Nessa análise da base de dados, as regras estabelecidas são mensuradas em sua 
 
   
   
-  
+
+## Base de dados utilizada
+
+Para simular a uma base de compras, foi utilizada uma base que está disponível na internet, no repositório de bases para machine learning do UCI, disponível neste [link](https://archive.ics.uci.edu/ml/datasets/Online+Retail+II). A base representa as  compras feitas em uma loja virtual no período de 2 anos (01/01/2009 - 09/12/2011) e contém os campos InvoiceNo (Número da nota), StockCode (código do item), Description (Descrição do item), Quantity (Quantidade comprada do item), InvoiceDate (Data da compra), UnitPrice (Preço da compra), CustomerID (Código do cliente) e Country (País do cliente). Contudo, esta tabela não resumia bem a situação estudada na empresa, então foi necessário realizar o tratamento da mesma. Para isso, foi utilizada uma lista dos nomes e gêneros, também disponível publicamente no site da [UCI](https://archive.ics.uci.edu/ml/datasets/Gender+by+Name), para atribuir nomes e gêneros aos clientes.
+
+### Análise e tratamento da base
+
+O primeiro procedimento realizado foi visualizar a base e contar oo número de países nas mesmas. Após observar a base, tomou-se a decisão de separar a base em grupos de clientes, utilizando os países, porém como os dados foram colhidos de uma loja inglesa, aproximadamente 90% dos dados tinham como país de origem o reino unido, assim, fez-se uma separação dos consumidores do reino unido em vários grupos. As imagens abaixo mostram a base original e contagem de linhas separadas por país.
+
+
+
+| ![](./Imagens/Dataset_original.png) |
+| :---------------------------------: |
+|        **Dataset original**         |
+
+|  ![](./Imagens/paises.png)   |
+| :--------------------------: |
+| **Itens comprados por país** |
+
+Para criar os grupos dos clientes ingleses, foi selecionado cada cliente distinto e separados em blocos de tamanhos  distintos, dando números a esses grupos. Com isso, havia um dataframe com grupos de clientes originais e um datagrame que continha os clientes ingleses e seus novos grupos. Para unir esses dataframes e utilizar os novos grupos foi feita uma query utilizando o sqlite, conforme a imagem abaixo.
+
+| ![](./Imagens/query_grupos.png) |
+| :-----------------------------: |
+|  Query para grupos de clientes  |
+
+Além disso, para melhor adequação do dataset com o original, foi atribuído a cada grupo de clientes uma cidade da inglaterra, assim, utilizou-se um dataset que continha as cidades mais populosas deste país e foi atribuído aos grupos as 47 mais populosas. Com isso foi criado um dataframe com as informações de ID do grupo, código do grupo, país e região que o grupo pertence. 
+
+![](./Imagens/df_grupos.png)
+
+Também se criou um dataframe contendo o código, ID e descrição dos itens e armazenados em um outro dataframe. O mesmo procedimento foi feito para o dataframe com nomes, gênero código e ID dos clientes
+
+| ![](./Imagens/df_itens.png) | ![](./Imagens/df_cliente.png) |
+| :-------------------------: | :---------------------------: |
+|     **Dataframe itens**     |    **Dataframe clientes**     |
+
+Além disso, para manter as tabelas normalizadas, os dataframes foram salvos em datasets separados e o dataframe original foi modificado para se adequar a essas características, tendo as informações que se encontram em outras tabelas substituídas pelo ID da informação, resultando no dataframe abaixo.
+
+![](./Imagens/df_normalizado.png)
 
 ## Algoritmos testados
 
@@ -211,5 +248,4 @@ spark
 
 ## ToDo
 
-* Encontrar base genérica para adequar modelo à LGPD
 * Realizar procedimentos já testados com base original na nova base genérica para melhor apresentação dos problemas encontrados e métodos utilizados
