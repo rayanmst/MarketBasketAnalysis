@@ -215,7 +215,7 @@ Inicialmente se utilizou todos os grupos para realização dos testes, assim de 
 | :------------------------------------------------------: |
 |      ![Exemplo de Basket](./Imagens/basket_eg.png)       |
 
-Em seguida, para cada grupo se aplicou o algoritmo de apriori, com suporte mínimo de 10%, 20% e 30% porém no caso deste dataset, era necessário que a máquina tivesse mais de 45 GB de memória RAM disponível, o que tornou inviável a utilização com 10%. Já no caso com 20%,  o número de arquivos supera o tamanho máximo possível do array no python. Por fim, com 30% passamos a ter baskets com nenhum item comum, o que resulta em erro no algortimo.
+Em seguida, para cada grupo se aplicou o algoritmo de apriori, com suporte mínimo de 10%, 20% e 30% porém no caso deste dataset, era necessário que a máquina tivesse mais de 45 GB de memória RAM disponível, o que tornou inviável a utilização com 10%. Já no caso com 20%,  o número de arquivos supera o tamanho máximo possível do array no python. Por fim, com 30% passamos a ter baskets com nenhum item comum, o que resulta em erro no algortimo. O arquivo Jupyter Notebook com o código utilizado se encontra em [Market_Basket_v1.ipynb](./Market_Basket_v1.ipynb) 
 
 ![](./Imagens/problemas_apriori.png)
 
@@ -223,7 +223,49 @@ Em seguida, para cada grupo se aplicou o algoritmo de apriori, com suporte míni
 
 ![](./Imagens/problemas_apriori3.png)
 
+Para contornar estes problemas de limitação de hardware, foram selecionados alguns grupos para realizar a predição. No ambiente empresarial, se escolheu os grupos que tinham maior representatividade na empresa. No ambiente de testes, escolhemos os grupos com formatos mais condizentes com os dados originais e também que possibilitariam apresentar um resultado. Assim, estabeleceu-se a seguinte query, onde são selecionados apenas os grupos contidos na lista. Ao aplicarmos o algoritmo com suporte mínimo de 15%, obtivemos o mesmo problema apresentado no teste anterior, com isso subimos o valor para 20%, o que possibilitou termos o estabelecimento de regras de associação e, caso continuássemos com este algoritmo, nos permitiria construir um modelo preditivo. Abaixo são apresentadas algumas regras associativas geradas e os valores das métricas calculadas. O arquivo Jupyter Notebook com o código utilizado se encontra em [Market_Basket_v1.2.ipynb](./Market_Basket_v1.2.ipynb) 
 
+```
+## Query das tabelas
+query_tabelas = """
+SELECT
+    ds.id_compra,
+    ds.cd_compra,
+    it.cd_item,
+    it.tx_item,
+    cl.cd_cliente,
+    cl.cliente_nome,
+    gc.cd_grupo_cliente,
+    gc.cd_pais,
+    gc.tx_pais,
+    gc.cd_estado,
+    ds.dt_compra,
+    ds.nm_quantidade,
+    ds.nm_vl_item,
+    ds.nm_vl_total	
+FROM
+    dataset ds
+LEFT JOIN
+    clientes cl
+ON
+    cl.id_cliente = ds.id_cliente
+LEFT JOIN
+    grupo_cliente gc
+ON
+    gc.id_grupo = ds.id_grupo
+LEFT JOIN
+    itens it
+ON
+    it.id_item = ds.id_item
+WHERE
+    gc.cd_grupo_cliente in (0,1,2,3,4,6,7,10,19,22)
+"""
+df = ps.sqldf(query_tabelas)
+```
+
+![Exemplo de regras de associação](./Imagens/eg_apriori.png)
+
+Apesar de conseguirmos ter resultados para os grupos selecionados, podemos perceber que são poucas sugestões, o que acarretaria em uma baixa possibilidade de eficácia do modelo. Além disso, ao utilizarmos a base de dados da empresa, enfrentou-se outros problemas, como o uso exagerado de armazenamento em disco (O algoritmo ocupou os 130GB disponíveis no disco rígido do computador utilizado), além de necessitar de mais de 12 horas de treinamento para os grupos selecionados.
 
 ## Referências
 
