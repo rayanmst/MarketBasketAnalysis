@@ -14,10 +14,11 @@ Nessa análise da base de dados, as regras estabelecidas são mensuradas em sua 
   
   
   
+
 <img src="https://render.githubusercontent.com/render/math?math=Supp=\frac{freq(X,Y)}{N}">
+
   
-  
-  
+
 * **Confiança:** Representa a probabilidade de que a transação do do lado esquerdo da regra (antecedente) também contenha o conjunto do lado direito (consequente), sendo dada por:
 
 
@@ -36,7 +37,7 @@ Nessa análise da base de dados, as regras estabelecidas são mensuradas em sua 
 <img src="https://render.githubusercontent.com/render/math?math=Lift = \frac{freq(X,Y)}{freq(X)*freq(Y)}">
 
   
-  
+
 
 ## Base de dados utilizada
 
@@ -64,7 +65,9 @@ Para criar os grupos dos clientes ingleses, foi selecionado cada cliente distint
 
 Além disso, para melhor adequação do dataset com o original, foi atribuído a cada grupo de clientes uma cidade da inglaterra, assim, utilizou-se um dataset que continha as cidades mais populosas deste país e foi atribuído aos grupos as 47 mais populosas. Com isso foi criado um dataframe com as informações de ID do grupo, código do grupo, país e região que o grupo pertence. 
 
-![](./Imagens/df_grupos.png)
+|  ![](./Imagens/df_grupos.png)  |
+| :----------------------------: |
+| **Dataset grupos de clientes** |
 
 Também se criou um dataframe contendo o código, ID e descrição dos itens e armazenados em um outro dataframe. O mesmo procedimento foi feito para o dataframe com nomes, gênero código e ID dos clientes
 
@@ -109,14 +112,6 @@ Apriori_gen(L, k)
       return result
 ```
 
-
-
-* **Problemas encontrados:**
-  * **Excesso de uso dos recursos:** Devido a alguns dos clientes na base terem um conjunto considerável de itens comprados no período analisado, as associações de tamanho superior a 80 itens antecedentes e a exigirem mais de 300 GB de memória RAM disponível, tornando impossível o processamento local do algoritmo
-  * **Tempo de processamento:** Durante os testes com conjuntos menores, o tempo de processamento foi superior a 11h, e resultando em intervenção do sistema abortando o processamento. Durante pesquisas sobre como aprimorar a análise com o algoritmo, encontrou-se diversas situações relatadas onde bases de tamanho similar à utilizada sendo processadas por dias a fio em ambientes em nuvem com recursos o suficiente para alocar as exigências do algoritmo.
-  * **Espaço de armazenamento: ** Durante o processamento dos daods, os arquivos temporários chegam a ocupar mais de 130GB de espaço em disco, tornando o processo oneroso para o ambiente disponível.
-* Devido aos problemas relatados, foi feita a migração para outro tipo de algoritmo,  que se mostrou menos oneroso ao sistema e mais eficaz que o atual
-
 ### FP-Growth
 
 <img src="./Imagens/fpgrowth.jpg" alt="Fp-tree construction" style="zoom: 40%;" />
@@ -124,10 +119,6 @@ Apriori_gen(L, k)
 
 
 O algoritmo de FP-Growth é uma forma de aprimorar o algoritmo de apriori. O algoritmo lê a base de transações e faz a contagem da frequência em que os itens aparecem, aqueles itens que estão abaixo do suporte mínimo são retirados dos conjuntos e estessão reordenados por frequência. Com esse passo feito, cada linha do algoritmo é varrida e sendo representada na árvore, tendo o número de vezes que cada subconjunto aparece. Assim que a árvore está formada, o algortimo faz a montagem dos conjuntos de itens frequentes com base no número de aparições do item nos subconjuntos. Devido a isso, o algortimo se mostra mais rápido e menos oneroso ao sistema.
-
-* **Resultados dos testes**
-  * Encontrou-se problemas semelhantes aos do algoritmo de apriori ao executar nos grupos de clientes com mais compras, contudo as dimensões dos problemas são menores que as encontradas anteriormente
-* **Medidas tomadas:** Com a pesquisa mais a fundo dos métodos mais eficazes de implementação do algoritmo, chegou-se na alternativa de paralelização do processamento dos modelos, sendo assim, optou-se pela utilização do framework Apache Spark com um ambiente Hadoop.
 
 
 
@@ -209,6 +200,28 @@ spark
 * Será exibida a mensagem abaixo, ao clicar e, "Spark UI" será aberta uma guia com informações sobre a seção do spark sendo utilizada
 
 <img src="./Imagens/sparksession.png" style="zoom:70%;" />
+
+
+
+## Testes realizados
+
+### Apriori
+
+Para o algortimo de apriori, foi necessário criar uma função de hot encode, onde retorna 1 caso a quantidade de itens for maior ou igual a 1 e 0 caso contrário.
+
+Inicialmente se utilizou todos os grupos para realização dos testes, assim de juntou as tabelas que tinhamos à disposição e se formaram *baskets* para cada grupo de cliente, como apresentado abaixo
+
+| ![Clientes e itens em cada basket](./Imagens/grupos.png) |
+| :------------------------------------------------------: |
+|      ![Exemplo de Basket](./Imagens/basket_eg.png)       |
+
+Em seguida, para cada grupo se aplicou o algoritmo de apriori, com suporte mínimo de 10%, 20% e 30% porém no caso deste dataset, era necessário que a máquina tivesse mais de 45 GB de memória RAM disponível, o que tornou inviável a utilização com 10%. Já no caso com 20%,  o número de arquivos supera o tamanho máximo possível do array no python. Por fim, com 30% passamos a ter baskets com nenhum item comum, o que resulta em erro no algortimo.
+
+![](./Imagens/problemas_apriori.png)
+
+![](./Imagens/problemas_apriori2.png)
+
+![](./Imagens/problemas_apriori3.png)
 
 
 
