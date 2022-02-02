@@ -265,7 +265,25 @@ df = ps.sqldf(query_tabelas)
 
 ![Exemplo de regras de associação](./Imagens/eg_apriori.png)
 
-Apesar de conseguirmos ter resultados para os grupos selecionados, podemos perceber que são poucas sugestões, o que acarretaria em uma baixa possibilidade de eficácia do modelo. Além disso, ao utilizarmos a base de dados da empresa, enfrentou-se outros problemas, como o uso exagerado de armazenamento em disco (O algoritmo ocupou os 130GB disponíveis no disco rígido do computador utilizado), além de necessitar de mais de 12 horas de treinamento para os grupos selecionados.
+Apesar de conseguirmos ter resultados para os grupos selecionados, podemos perceber que são poucas sugestões, o que acarretaria em uma baixa possibilidade de eficácia do modelo. Além disso, ao utilizarmos a base de dados da empresa, enfrentou-se outros problemas, como o uso exagerado de armazenamento em disco (O algoritmo ocupou os 130GB disponíveis no disco rígido do computador utilizado), além de necessitar de mais de 12 horas de treinamento para os grupos selecionados).
+
+
+
+### FP-Growth
+
+A utilização do algortimo de FP-Growth foi feita utilizando o mesmo notebook que o algoritmo de apriori, mudando apenas a função utilizada, conforme apresentado abaixo. 
+
+![](./Imagens/alteracao_script.png)
+
+Inicialmente se testou com 10% de suporte mínimo, resultando em problemas fechamentos inesperados do browser. Foram feitas diversas tentativas para validar se o problema havia ocorrido por falha no sistema operacional ou no script, contudo, apesar de haver reiniciado a máquina e ter deixado o mínimo de aplicações executando juntamente com o script, o resultado foi o mesmo, e como log de erro surgia a mensagem abaixo.
+
+![](./Imagens/problemas_fpgrowth01.png)
+
+ Com esse resultado, realizou-se a alteração do suporte mínimo para 15%, o que resultou em problemas de memória semelhantes aos do algortimo de apriori. Contudo o script não apresentou mais detalhes do erro, o que não pode dar uma conclusão clara se o algoritmo de fp-growth é ou não menos custoso para a máquina. Sendo assim, seguiu-se com ele e aumentamos o suporte mínimo para 20%, resultando em um sucesso na execução do bloco com maior velocidade que o algortimo anterior. Entretanto, quando utilizando a tabela da empresa, não foi possível obter um resultado para os grupos com mais itens, assim como não foi obtido resultados satisfatórios quando excluídos estes grupos. Visto que necessitou utilizar uma máquina com 65GB de memória RAM para executar o script com sucesso. Assim, realizando estudos de como poderíamos contornar a situação e como particionar essa análise, chegou-se ao framework do Apache Spark, o qual realiza o processamento de maneira paralela, gerando uma menor demanda de recursos de memória RAM.
+
+![](./Imagens/problemas_fpgrowth015.png)
+
+
 
 ## Referências
 
@@ -304,3 +322,6 @@ Apesar de conseguirmos ter resultados para os grupos selecionados, podemos perce
 ## ToDo
 
 * Realizar procedimentos já testados com base original na nova base genérica para melhor apresentação dos problemas encontrados e métodos utilizados
+  * Apriori - OK
+  * FP-Growth - OK
+  * FP-Growth (Spark) - Em andamento (05/02)
