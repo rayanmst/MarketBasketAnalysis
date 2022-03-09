@@ -205,7 +205,7 @@ spark
 
 ## Testes realizados
 
-### Apriori
+### **Apriori**
 
 Para o algortimo de apriori, foi necessário criar uma função de hot encode, onde retorna 1 caso a quantidade de itens for maior ou igual a 1 e 0 caso contrário.
 
@@ -269,7 +269,7 @@ Apesar de conseguirmos ter resultados para os grupos selecionados, podemos perce
 
 
 
-### FP-Growth
+### **FP-Growth**
 
 A utilização do algortimo de FP-Growth foi feita utilizando o mesmo notebook que o algoritmo de apriori, mudando apenas a função utilizada, conforme apresentado abaixo. 
 
@@ -283,7 +283,35 @@ Inicialmente se testou com 10% de suporte mínimo, resultando em problemas fecha
 
 ![](./Imagens/problemas_fpgrowth015.png)
 
+### **Apache Spark**
 
+Uma das vantagens da utilização do Apache Spark é a possibilidade de monitorar as tarefas que estão ocorrendo no cluster devido à existência da uma interface do usuário que é criada com a inicialização de uma sessão no Spark. Nesta tela é possível ver os Jobs em andamento, os Stages, o armazenamento (quando implementado a utilização de outras soluções Apache), As configurações do ambiente, monitoramento dos executores e informações das queries SQL dos Spark.
+
+![](./Imagens/SparkUI.png)
+
+Para a realização dos testes, foi necessário realizar várias mudanças na estrutura dos códigos. Para a separação em Baskets, o Spark utiliza de uma estrutura diferente da utilizada nos modelos anteriores. É criado uma linha para cada cliente, onde uma coluna contém o código do cliente e uma segunda coluna contém a lista de itens comprados por este cliente. O código que gera os Baskets é exibido abaixo. Foi utilizada a função do python globals(), que permite a criação de variáveis passando strings como parâmetro, permitindo a criação automática dos baskets divididos por grupo de clientes.
+
+![](./Imagens/basketSpark.png)
+
+Para realizar o treinamento dos modelos, foi utilizado o pacote pyspark.ml.fpm que contém a estrutura para criação de modelos de mineiração de padrões frequentes.  A diferença do modelo de FPGrowth utilizado no apache Spark para os demais modelos deste algoritmo é a possibilidade de clusterização da execução do algoritmo. Ou seja, o Apache Spark permite que as tarefas sejam divididas em blocos e processadas separadamente e em paralelo. Para uma efetiva utilização do potencial do paralelismo, é necessário montar um ambiente multi-cluster, onde há uma máquina conhecida como master/driver que distribui as tarefas e interage com os clientes e máquinas Workers/executors que realizam as tarefas atribuidas, permitindo um processamento rápido e confiável. Contudo, mesmo em ambiente local, o Spark apresenta resultados acima da média, visto que, por processar em memória em pequenos blocos, apresenta uma velocidade muito superior aos demais. O código utilizado para realizar o treinamento e salvamento dos arquivos está apresentado abaixo.
+
+![](./Imagens/treinamentoSpark.png)
+
+Para este framework, utilizou-se também de 20% de suporte mínimo e 60% de confiança mínima. O treinamento do modelo é realizado de maneira rápida, o único ponto negativo deste framework é que a velocidade de salvamento dos modelos é dispendiosa, visto que deve realizar a manipulação de diversos arquivos fragmentados em diversas pastas. Utilizando os dados criados para este estudo, os resultados obtidos ficaram próximos daqueles dos modelos anteriores, visto que a separação dos clientes em grupos ocorreu de maneira aleatória e não por um padrão de segmento de atuação. No dataset utilizado na empresa estudada, foi possível realizar a redução do suporte mínimo de cerca de 30% para 5%, o que permite um volume de sugestões muito mais assertivo que os algortimos anteriores.
+
+
+### **Sugestões**
+A criação das sugestões também foi feita em ambiente spark. Utilizou-se os dados dos últimos 2 meses do dataset utilizado para o treinamento, criando cestas de compras menores que aquelas utilizadas no treinamento. A lógica das tabelas é similar aquela utilizada no treinamento. A leitura dos modelos e a geração das sugestões são apresentadas nas figuras abaixo.
+
+![](./Imagens/loadModelos.png)
+
+![](./Imagens/SugestaoSpark.png)
+
+Para o dataset deste trabalho é gerado uma planilha no excel que compila as sugestões de cada cliente, contendo o código e nome do mesmo, itens comprados e itens sugeridos. Para a empresa, foi criado uma tabela no banco de dados que é lida pelo software de Business Inteligence (BI) e é criada uma Dashboard que apresenta os itens para os executivos de vendas, os quais fazem as negociações com os clientes finais.
+
+### **Trabalhos futuros**
+
+Para continuidade deste trabalho, em estudos futuros é interessante a realização da criação de um ambiente Spark com várias máquinas, possibilitando a utilização de todo o potencial do Framework. Também é possível realizar a criação de uma aplicação web, onde seja permitido inserir o grupo do cliente e os itens comprados, que retornaria a sugestão para os itens em questão e que também permita a inserção de um arquivo que será processado pelo algortimo e gerará uma base de sugestões utilizado o mesmo.
 
 ## Referências
 
@@ -317,11 +345,3 @@ Inicialmente se testou com 10% de suporte mínimo, resultando em problemas fecha
 
 [15] https://pt.wikipedia.org/wiki/Apache_Spark
 
-
-
-## ToDo
-
-* Realizar procedimentos já testados com base original na nova base genérica para melhor apresentação dos problemas encontrados e métodos utilizados
-  * Apriori - OK
-  * FP-Growth - OK
-  * FP-Growth (Spark) - Em andamento (05/02)
