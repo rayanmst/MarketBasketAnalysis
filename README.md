@@ -307,7 +307,17 @@ A criação das sugestões também foi feita em ambiente spark. Utilizou-se os d
 
 ![](./Imagens/SugestaoSpark.png)
 
-Para o dataset deste trabalho é gerado uma planilha no excel que compila as sugestões de cada cliente, contendo o código e nome do mesmo, itens comprados e itens sugeridos. Para a empresa, foi criado uma tabela no banco de dados que é lida pelo software de Business Inteligence (BI) e é criada uma Dashboard que apresenta os itens para os executivos de vendas, os quais fazem as negociações com os clientes finais.
+Para o dataset deste trabalho é gerado uma planilha no [excel](./Predicoes/predicao_2022-03-08.xlsx), uma amostra das sugestões é mostrada abaixo, que compila as sugestões de cada cliente, contendo o código e nome do mesmo, itens comprados e itens sugeridos. Para a empresa, foi criado uma tabela no banco de dados que é lida pelo software de Business Inteligence (BI) e é criada uma Dashboard que apresenta os itens para os executivos de vendas, os quais fazem as negociações com os clientes finais.
+
+![](./Imagens/amostra_sugestao.png)
+
+### Resultados obtidos
+
+Após a execução do algoritmo na base da empresa e apresentação para os clientes pela equipe de vendas, aguardou-se o período de 1 mês e foi feita uma análise dos itens que foram sugeridos e aqueles que foram comprados. A análise feita está apresentada no arquivo excel, disponibilizado [aqui](./analise.xlsx) e com uma amostra dos dados apresentada abaixo, é possível observarmos que houve uma compra considerável dos itens sugeridos. Contudo, entende-se que este intervalo de tempo é curto e serão necessárias mais análises em momentos futuros.
+
+![](./Imagens/Amostra_analise.png) 
+
+
 
 ### **Trabalhos futuros**
 
